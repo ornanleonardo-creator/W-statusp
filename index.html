@@ -2,20 +2,75 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>W Status</title>
+<title>W STATUS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{margin:0;font-family:Arial;background:#ece5dd}
-header{background:#075E54;color:white;padding:15px;text-align:center;font-size:20px;font-weight:bold}
-select,input{width:92%;margin:8px auto;display:block;padding:10px;border-radius:6px;border:0}
-#tabs{display:flex;background:#075E54}
-#tabs button{flex:1;padding:10px;border:0;background:#075E54;color:white;font-weight:bold}
-#tabs button.active{background:#128C7E}
-.card{background:#dcf8c6;margin:10px;padding:10px;border-radius:10px}
-.card img,.card video{width:100%;border-radius:10px}
-.actions{display:flex;gap:6px;margin-top:6px}
-.actions button{flex:1;background:#25D366;border:0;padding:8px;border-radius:6px;font-weight:bold}
+body{
+ margin:0;
+ font-family:Arial, sans-serif;
+ background:#ece5dd;
+}
+
+header{
+ background:#075E54;
+ color:white;
+ padding:12px;
+ text-align:center;
+ font-size:20px;
+}
+
+.controls{
+ display:flex;
+ gap:5px;
+ padding:10px;
+ background:#f0f0f0;
+}
+
+select{
+ flex:1;
+ padding:8px;
+ border-radius:5px;
+ border:none;
+}
+
+#list{
+ padding:10px;
+}
+
+.card{
+ background:white;
+ margin-bottom:12px;
+ padding:8px;
+ border-radius:10px;
+ box-shadow:0 2px 5px rgba(0,0,0,.1);
+ animation:pop .2s ease;
+}
+
+.card img, .card video{
+ width:100%;
+ border-radius:10px;
+}
+
+.actions{
+ display:flex;
+ justify-content:space-around;
+ margin-top:8px;
+}
+
+.actions button{
+ background:#25D366;
+ border:none;
+ padding:8px 12px;
+ border-radius:20px;
+ color:white;
+ font-size:14px;
+}
+
+@keyframes pop{
+ from{transform:scale(.95);opacity:0}
+ to{transform:scale(1);opacity:1}
+}
 </style>
 </head>
 
@@ -23,71 +78,97 @@ select,input{width:92%;margin:8px auto;display:block;padding:10px;border-radius:
 
 <header>W STATUS</header>
 
-<div id="tabs">
-  <button class="active" onclick="showTab('all',this)">📱 Statuts</button>
-  <button onclick="showTab('fav',this)">❤️ Favoris</button>
-</div>
+<div class="controls">
+<select id="type">
+ <option value="Images">Images</option>
+ <option value="Videos">Vidéos</option>
+</select>
 
-<select id="cat"></select>
-<input id="search" placeholder="Rechercher...">
+<select id="genre">
+ <option value="">Tous les genres</option>
+ <option>Amour</option>
+ <option>Motivation</option>
+ <option>Fun</option>
+ <option>Triste</option>
+</select>
+</div>
 
 <div id="list"></div>
 
 <script>
-const URL="https://raw.githubusercontent.com/ornanleonardo-creator/W-statusp/main/status.json";
-let data={},current=[],favoris=JSON.parse(localStorage.getItem("fav")||"[]"),tab="all";
+const DATA_URL="https://raw.githubusercontent.com/ornanleonardo-creator/W-statusp/main/status.json";
 
-fetch(URL).then(r=>r.json()).then(j=>{
- data=j;
- for(let c in data) cat.innerHTML+=`<option>${c}</option>`;
- load(cat.value);
-});
+let data={}, current=[];
 
-cat.onchange=e=>load(e.target.value);
+fetch(DATA_URL)
+ .then(r=>r.json())
+ .then(j=>{
+   data=j;
+   load();
+ });
 
-search.oninput=e=>{
- let v=e.target.value.toLowerCase();
- render(current.filter(x=>x.content.toLowerCase().includes(v)));
-}
-
-function load(c){
- current=data[c];
+function load(){
+ current=data[type.value];
  render(current);
 }
 
-function showTab(t,btn){
- tab=t;
- document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("active"));
- btn.classList.add("active");
- if(t==="fav") render(favoris);
- else load(cat.value);
+type.onchange=load;
+
+genre.onchange=()=>{
+ let g=genre.value;
+ if(!g) render(current);
+ else render(current.filter(x=>x.genre===g));
 }
 
-function render(list){
- listDiv=document.getElementById("list");
- listDiv.innerHTML="";
- list.forEach(i=>{
-  let h=`<div class="card">`;
-  if(i.type=="text")h+=`<p>${i.content}</p>`;
-  if(i.type=="image")h+=`<img src="${i.content}">`;
-  if(i.type=="video")h+=`<video controls src="${i.content}"></video>`;
-  h+=`<div class="actions">
-    <button onclick="copy('${i.content}')">📋</button>
-    <button onclick="addFav('${i.type}','${i.content}')">❤️</button>
-  </div></div>`;
-  listDiv.innerHTML+=h;
+function render(arr){
+ list.innerHTML="";
+ arr.forEach(i=>{
+  let c=document.createElement("div");
+  c.className="card";
+
+  if(i.type==="image"){
+   c.innerHTML=`
+    <img src="${i.content}">
+    <div class="actions">
+     <button onclick="share('${i.content}')">📤</button>
+     <button onclick="saveFile('${i.content}')">💾</button>
+     <button onclick="fav('${i.content}')">❤️</button>
+    </div>`;
+  }else{
+   c.innerHTML=`
+    <video controls src="${i.content}"></video>
+    <div class="actions">
+     <button onclick="share('${i.content}')">📤</button>
+     <button onclick="saveFile('${i.content}')">💾</button>
+     <button onclick="fav('${i.content}')">❤️</button>
+    </div>`;
+  }
+  list.appendChild(c);
  });
 }
 
-function copy(t){
- navigator.clipboard.writeText(t);
- alert("Copié ✅");
+function share(url){
+ if(navigator.share){
+  navigator.share({url});
+ }else{
+  window.open("https://wa.me/?text="+encodeURIComponent(url));
+ }
 }
 
-function addFav(type,content){
- if(!favoris.find(f=>f.content===content)){
-  favoris.push({type,content});
-  localStorage.setItem("fav",JSON.stringify(favoris));
+function saveFile(url){
+ let a=document.createElement("a");
+ a.href=url;
+ a.download="";
+ document.body.appendChild(a);
+ a.click();
+ document.body.removeChild(a);
+}
+
+function fav(url){
+ let f=JSON.parse(localStorage.getItem("fav")||"[]");
+ if(!f.includes(url)){
+  f.push(url);
+  localStorage.setItem("fav",JSON.stringify(f));
   alert("Ajouté aux favoris ❤️");
  }
 }
