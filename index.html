@@ -130,17 +130,17 @@ function render(arr){
    c.innerHTML=`
     <img src="${i.content}">
     <div class="actions">
-     <button onclick="share('${i.content}')">📤</button>
-     <button onclick="saveFile('${i.content}')">💾</button>
-     <button onclick="fav('${i.content}')">❤️</button>
+     <button onclick="share('${i.content}')">➗</button>
+     <button onclick="saveFile('${i.content}')">💚</button>
+     <button onclick="fav('${i.content}')">🖤</button>
     </div>`;
   }else{
    c.innerHTML=`
     <video controls src="${i.content}"></video>
     <div class="actions">
-     <button onclick="share('${i.content}')">📤</button>
-     <button onclick="saveFile('${i.content}')">💾</button>
-     <button onclick="fav('${i.content}')">❤️</button>
+     <button onclick="share('${i.content}')">➗</button>
+     <button onclick="saveFile('${i.content}')">💚</button>
+     <button onclick="fav('${i.content}')">🖤</button>
     </div>`;
   }
   list.appendChild(c);
@@ -169,7 +169,7 @@ function fav(url){
  if(!f.includes(url)){
   f.push(url);
   localStorage.setItem("fav",JSON.stringify(f));
-  alert("Ajouté aux favoris ❤️");
+  alert("Ajouté aux favoris 🖤");
  }
 }
 </script>
