@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>W Statuts</title>
+<style>
+body{font-family:Arial;background:#f4fdf7;padding:15px}
+.card{background:#fff;padding:15px;margin-bottom:10px;border-radius:8px}
+button{background:#1e7f43;color:#fff;border:none;padding:6px 10px;border-radius:5px}
+</style>
+</head>
+<body>
+
+<h2>W Statuts</h2>
+
+<script>
+fetch("w-statusp.txt")
+.then(r=>r.text())
+.then(t=>{
+ t.split("\n").forEach(l=>{
+  if(l.trim()!=""){
+   document.write(`<div class='card'>${l}<br>
+   <button onclick="navigator.clipboard.writeText('${l}')">Copier</button>
+   </div>`)
+  }
+ })
+})
+</script>
+
+</body>
+</html>
