@@ -1,0 +1,9 @@
+{
+  "Motivation": [
+    { "type": "text", "content": "Sois fort même quand personne ne te regarde." },
+    { "type": "image", "content": "https://raw.githubusercontent.com/ornanleonardo-creator/W-statusp/main/images/motivation1.jpg" }
+  ],
+  "Amour": [
+    { "type": "text", "content": "L’amour vrai ne force jamais." }
+  ]
+}
