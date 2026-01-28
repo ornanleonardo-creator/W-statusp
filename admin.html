@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>Admin W Status</title>
+<style>
+body{font-family:Arial;background:#121212;color:white;padding:20px}
+input,select,button{width:100%;padding:10px;margin:6px 0;border-radius:6px;border:0}
+button{background:#25D366;font-weight:bold}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<h2>🔐 Admin W Status</h2>
+
+<input id="key" placeholder="Clé secrète">
+
+<div id="admin" class="hidden">
+  <select id="type">
+    <option value="image">Image</option>
+    <option value="video">Vidéo</option>
+    <option value="text">Texte</option>
+  </select>
+
+  <input id="content" placeholder="Lien image / vidéo / texte">
+  <button onclick="add()">➕ Ajouter</button>
+
+  <p id="msg"></p>
+</div>
+
+<script>
+const SECRET="W-ADMIN-2026"; // 🔴 change la clé ici
+const URL="https://raw.githubusercontent.com/ornanleonardo-creator/W-statusp/main/status.json";
+
+key.oninput=()=>{
+ if(key.value===SECRET){
+  document.getElementById("admin").classList.remove("hidden");
+ }
+}
+
+function add(){
+ fetch(URL).then(r=>r.json()).then(j=>{
+  if(!j["Admin"]) j["Admin"]=[];
+  j["Admin"].push({
+   type:type.value,
+   content:content.value
+  });
+  msg.innerText="✅ Copie le lien et ajoute-le dans status.json";
+ });
+}
+</script>
+
+</body>
+                                     </html>
