@@ -2,30 +2,51 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>W Statuts</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W Status</title>
 <style>
-body{font-family:Arial;background:#f4fdf7;padding:15px}
-.card{background:#fff;padding:15px;margin-bottom:10px;border-radius:8px}
-button{background:#1e7f43;color:#fff;border:none;padding:6px 10px;border-radius:5px}
+body{margin:0;font-family:Arial;background:#ece5dd}
+header{background:#075E54;color:white;padding:15px;text-align:center;font-weight:bold}
+select,input{width:90%;margin:10px auto;display:block;padding:10px}
+.card{background:#dcf8c6;margin:10px;padding:10px;border-radius:10px}
+.card img,.card video{width:100%;border-radius:10px}
+button{width:100%;padding:8px;margin-top:5px;background:#25D366;border:0}
 </style>
 </head>
 <body>
 
-<h2>W Statuts</h2>
+<header>W STATUS</header>
+<select id="cat"></select>
+<input id="search" placeholder="Rechercher...">
+<div id="list"></div>
 
 <script>
-fetch("w-statusp.txt")
-.then(r=>r.text())
-.then(t=>{
- t.split("\n").forEach(l=>{
-  if(l.trim()!=""){
-   document.write(`<div class='card'>${l}<br>
-   <button onclick="navigator.clipboard.writeText('${l}')">Copier</button>
-   </div>`)
-  }
- })
-})
+const URL="https://raw.githubusercontent.com/ornanleonardo-creator/W-statusp/main/status.json";
+let data={},cur=[];
+fetch(URL).then(r=>r.json()).then(j=>{
+ data=j;
+ for(let c in data) cat.innerHTML+=`<option>${c}</option>`;
+ show(cat.value);
+});
+cat.onchange=e=>show(e.target.value);
+search.oninput=e=>{
+ let v=e.target.value.toLowerCase();
+ show(cat.value,v);
+}
+function show(c,f=""){
+ list.innerHTML="";
+ cur=data[c];
+ cur.filter(x=>x.content.toLowerCase().includes(f))
+ .forEach(i=>{
+  let h=`<div class=card>`;
+  if(i.type=="text")h+=`<p>${i.content}</p>`;
+  if(i.type=="image")h+=`<img src="${i.content}">`;
+  if(i.type=="video")h+=`<video controls src="${i.content}"></video>`;
+  h+=`<button onclick="copy('${i.content}')">📋 Copier</button></div>`;
+  list.innerHTML+=h;
+ });
+}
+function copy(t){navigator.clipboard.writeText(t);alert("Copié")}
 </script>
-
 </body>
 </html>
